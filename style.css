@@ -1,0 +1,205 @@
+body {
+  background: orange;
+  font-family: 'DotGothic16', sans-serif;
+}
+
+/* 遊戲框 */
+#game {
+  width: 60vw;
+  height: 90vh;
+  margin: auto;
+  background: url(./images/background.png) no-repeat center;
+  background-size: cover;
+  text-align: center;
+  position: relative;
+  /* 不能反白 */
+  user-select: none;
+  /* 不能拖曳 */
+  -webkit-user-drag: none;
+  display: flex;
+  flex-direction: row-reverse;
+  
+}
+#sun{
+  width: 25%;
+  height: 30%;
+  background:url(./images/sun.png) no-repeat center center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: contain;
+}
+
+
+
+/* 遊戲範圍 */
+#zone {
+  width: 35vw;
+  height: 55vh;
+  /* background: rgba(255, 0, 0, 0.5); */
+  position: fixed;
+  top: 26%;
+  left: 50%;
+  transform: translate(-50%, -26%);
+  border-radius: 50%;
+  z-index: 1;
+  /* overflow: hidden; */
+}
+
+/* 點擊圖片尺寸 */
+#zone img {
+  height: 20%;
+  cursor: pointer;
+  position: fixed;
+}
+#zone .father,
+#zone .boy {
+  width: 10%;
+}
+#zone .bird {
+  width: 15%;
+}
+
+#zone .score1,
+#zone .score2 {
+  height: 14%;
+  width: 10%;
+}
+#zone .score3 {
+  width: 6vw;
+  height: 8vh;
+}
+
+/* 按鈕 */
+#btn-start {
+  width: 10vw;
+  height: 10vh;
+  background: #ddd;
+  border: 3px solid #aaa;
+  font-size: calc(0.1rem + 3vw);
+  text-align: center;
+  line-height: 10vh;
+  cursor: pointer;
+  position: absolute;
+  float: left;
+  top: 90%;
+  left: 50%;
+  transform: translate(-50%, -90%);
+}
+
+/* 樹的圖片 */
+#game #img {
+  width: 30vw;
+  height: 70vh;
+  position: fixed;
+  top: 10%;
+  left: 35%;
+}
+
+/* 樹的搖晃效果 */
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* 樹的搖晃效果 */
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25%,
+  75% {
+    transform: translateX(-10px);
+  }
+  50% {
+    transform: translateX(10px);
+  }
+}
+
+/* 黑色記錄框 */
+#record {
+  width: 40vw;
+  height: 20vh;
+  background: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 97%;
+  left: 50%;
+  transform: translate(-50%, -97%);
+  border-radius: 20px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  /* justify-content: space-around; */
+  font-size: calc(0.1rem + 2vw);
+}
+
+/* 鈔票框 */
+#record > div {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 百鈔 */
+/* 五百 */
+/* 一千 */
+#one,
+#five,
+#ten{
+  width: 33.3%;
+  height: 50%;
+  /* background: rgba(0,255,0,0.3); */
+}
+
+#current {
+  width: 65% !important;
+  height: 50%;
+  font-size: calc(0.7rem + 2vw);
+
+  background: rgba(255,0,0,0.3);
+  border-radius:0 0 0 20px  ;
+}
+
+#his {
+  width: 35%;
+  height: 50%;
+  font-size: calc(0.1rem + 1.5vw);
+  display: flex;
+  flex-direction: column;
+  background: rgba(255, 255, 0, 0.3);
+  border-radius:0 0 20px 0 ;
+}
+
+#his-1{
+  padding-left: 0.3rem;
+}
+#one img,
+#five img,
+#ten img {
+  height: 80%;
+}
+
+/* 秒數 */
+#text-time {
+  font-size: calc(0.1rem + 4vw);
+}
+
+/*1920px 以上改變字體大小跟位置 */
+@media (min-width: 1920px) {
+  #btn-start {
+    font-size: calc(2rem + 1.5vw);
+  }
+
+  #record {
+    font-size: calc(1rem + 2vw);
+  }
+
+  #text-time {
+    font-size: calc(2rem + 2vw);
+    position: fixed;
+    top: 9%;
+    left: 76%;
+    transform: translate(-76%, -9%);
+  }
+}

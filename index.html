@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=DotGothic16&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css">
+  <title>MoneyTree</title>
+</head>
+
+<body>
+  <div id="game">
+    <div id="sun"><span id="text-time">00</span>
+    </div>
+    <img src="./images/tree2.png" id="img" class="tree">
+    <div id="btn-start">PLAY</div>
+
+    <div id="record">
+      <div id="one">
+        <img src="./images/100s.jpg">
+        x<span id="one-score">0</span>
+      </div>
+      <div id="five">
+        <img src="./images/500s.jpg">
+        x<span id="five-score">0</span>
+      </div>
+      <div id="ten">
+        <img src="./images/1000s.jpg">
+        x<span id="ten-score">0</span>
+      </div>
+      <div id="current">
+        Total&nbsp;$<span id="current-score">xxxxx</span>
+      </div>
+
+      <div id="his">
+        <div>Best Record</div>
+        <div id="his-1"><span id="name">anonymous</span>/$<span id="sor">0</span></div>
+
+      </div>
+    </div>
+
+    <div id="zone"></div>
+  </div>
+
+  <audio id="money" src="./money.mp3"></audio>
+
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js'
+    integrity='sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=='
+    crossorigin='anonymous'></script>
+  <!-- 引入sweet-alert2 -->
+  <script src='https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.32/sweetalert2.all.min.js'
+    integrity='sha512-zB7yJLSASiSevQmWCrQaq+z/f5zRIa884hwWgmK1oI3MfolIzKcpDtyfBsrGqUi/hMCObVwr/+SZTByOqh0zkQ=='
+    crossorigin='anonymous'></script>
+  <script>
+    let oneScore = 0
+    let fiveScore = 0
+    let tenScore = 0
+    let currentScore = 0
+    let time = 0
+    // 最高分設定
+    const hs = {
+      name: 'anonymous',
+      score: 0
+    }
+
+    // 如果localStorage裡存在hs這個數值
+    if (localStorage.hs) {
+      const data = JSON.parse(localStorage.hs)
+      hs.name = data.name
+      hs.score = data.score
+      $('#name').text(hs.name)
+      $('#sor').text(hs.score)
+    }
+
+
+
+
+    // 紀錄表先藏起來
+    $('#record').hide()
+
+    // 點擊開始
+    $('#btn-start').click(() => {
+
+      //  開始按鈕淡出
+      $('#btn-start').fadeToggle()
+      // 淡入圖片沒字版
+      $('#img').fadeIn(2000, () => {
+        $('#img').attr('src', `./images/tree3.png`)
+      })
+      // 淡入記錄框
+      $('#record').fadeIn()
+
+      //重設百鈔分數
+      oneScore = 0
+      // 重設五百分數
+      fiveScore = 0
+      // 重設千鈔分數
+      tenScore = 0
+      // 重設當前分數
+      currentScore = 0
+      $('#one-score').text(oneScore)
+      $('#five-score').text(fiveScore)
+      $('#ten-score').text(tenScore)
+      $('#current-score').text(currentScore)
+
+      // 重設秒數
+      time = 15
+      $('#text-time').text(time)
+
+      // 因為 setInterval 裡的 this 會指向 window，而不是點到的按鈕，所以先把 this 存起來
+      const_this = this
+
+      timer = setInterval(function () {
+        time--
+        // 開始倒數
+        $('#text-time').text(time)
+        // 倒數秒數小於10，十位數補零
+        const Time = time.toString().padStart(2, '0');
+        $('#text-time').text(Time);
+
+        // 隨機1~10
+        // ceil :無條件進位
+        const random = Math.ceil(Math.random() * 10)
+
+        // 產生國父的機率
+        if (random > 3 && $('.father').length < 10) {
+          // round:四捨五入
+          const top = Math.round(Math.random() * 100) + '%'
+          const left = Math.round(Math.random() * 100) + '%'
+          const father = $(`<img src='./images/father.png' class=father style='top:${top};left:${left};transform:translate(-${left},-${top});'>`)
+
+          $('#zone').append(father)
+        }
+
+        // 產生boy的機率
+        if (random > 5 && $('.boy').length < 7) {
+          const top = Math.round(Math.random() * 100) + '%'
+          const left = Math.round(Math.random() * 100) + '%'
+
+          const boy = $(`<img src='./images/boy.png' class=boy style='top:${top};left:${left};transform:translate(-${left},-${top});'>`)
+          $('#zone').append(boy)
+        }
+
+        // 產生鳥的機率
+        if (random > 6 && $('.bird').length < 3) {
+          const top = Math.round(Math.random() * 100) + '%'
+          const left = Math.round(Math.random() * 100) + '%'
+          const bird = $(`<img src='./images/bird.png' class=bird style='top:${top};left:${left};transform:translate(-${left},-${top});'>`)
+          $('#zone').append(bird)
+          moveBird(bird)
+        }
+
+
+        if (time === 0) {
+          //  停止倒數
+          clearInterval(timer)
+          // 清空所有子元素
+          $('#zone').empty()
+          // 記錄區消失
+          $('#record').fadeToggle()
+          // 樹變有字版
+          $('#img').fadeIn(2000, () => {
+            $('#img').attr('src', `./images/tree2.png`)
+          })
+          // 開始按鈕出現
+          $('#btn-start').fadeIn()
+
+          if (currentScore > hs.score) {
+            Swal.fire({
+              icon: 'success',
+              title: '時間到',
+              text: `賺大錢，你獲得$ ${currentScore} `,
+              // input 的 type
+              input: 'text',
+              // input 的其他屬性
+              inputAttributes: {
+                required: true
+              },
+              inputPlaceholder: '請輸入你的名字',
+              // 不允許點擊外面關閉對話框
+              allowOutsideClick: true,
+              // 不允許按 ESC 關閉對話框
+              allowEscapeKey: true
+              // .then是對話框關閉的時候會執行的動作，.then的result會說明關掉視窗的方法
+            }).then(function (result) {
+              hs.score = currentScore
+              hs.name = result.value
+              $('#name').text(hs.name)
+              $('#sor').text(hs.score)
+              // localStorage.setItem(名稱,文字)
+              // localStorage.名稱 = 文字
+              // JSON.功能:把陣列或物件的程式碼轉成物件
+              localStorage.hs = JSON.stringify(hs)
+            })
+          } else {
+            Swal.fire({
+              height: "100px", // 调整高度
+              width: "250px", // 調整寬度
+              icon: 'info',
+              title: '時間到',
+              text: `你得到$ ${currentScore} `
+            })
+          }
+        }
+
+
+      }, 1000)
+
+    })
+
+    $('#zone').on('click', '.boy ,.father, .bird', function () {
+      // tree搖動
+      $ ('#img').addClass('shake')
+      setTimeout(function () {
+        $('#img').removeClass('shake')
+      }, 500)
+
+      // 播放音效
+      moneySound()
+
+      // 點擊國父圖片
+      if ($(this).hasClass('father')) {
+        // 讓分數圖片出現在底部位置
+        const top = Math.round(Math.random() * (95 - 80) + 80) + '%'
+        const left = Math.round(Math.random() * 100) + '%'
+        const score1 = $(`<img src='./images/score1.png' class=score1 style='top:${top};left:${left};transform:translate(-${left},-${top});'>`)
+
+        // 國父圖片淡出
+        $(this).animate({
+          top: "110%",
+          left: '15%'
+        }).fadeToggle()
+        oneScore += 1
+        currentScore += 100
+        $('#current-score').text(currentScore)
+        $('#one-score').text(oneScore)
+
+        // 新增100分數圖片
+        $('#zone').append(score1)
+        score1.animate({
+          top: "10%"
+        }, 500).fadeToggle()
+
+        // 點擊鳥圖片
+      } else if ($(this).hasClass('bird')) {
+        //  讓分數圖片出現在底部位置
+        const top = Math.round(Math.random() * (95 - 80) + 80) + '%'
+        const left = Math.round(Math.random() * 100) + '%'
+        const score3 = $(`<img src='./images/score3.png' class=score2 style='top:${top};left:${left};transform:translate(-${left},-${top});'>`)
+        $(this).stop()
+        $(this).animate({
+          top: "110%",
+          left: '90%'
+        }).fadeToggle()
+        tenScore += 1
+        currentScore += 1000
+        $('#current-score').text(currentScore)
+        $('#ten-score').text(tenScore)
+
+        // 新增1000分數圖片
+        $('#zone').append(score3)
+
+        score3.animate({
+          top: "20%"
+        }, 600).fadeToggle()
+
+        // 點擊男孩
+      } else if ($(this).hasClass('boy')) {
+        //  讓分數圖片出現在底部位置
+        const top = Math.round(Math.random() * (95 - 80) + 80) + '%'
+        const left = Math.round(Math.random() * 100) + '%'
+        const score2 = $(`<img src='./images/score2.png' class=score2 style='top:${top};left:${left};transform:translate(-${left},-${top});'>`)
+
+        // 圖片淡出
+        $(this).animate({
+          top: "110%",
+          left: '50%'
+        }).fadeToggle()
+        fiveScore += 1
+        currentScore += 500
+        $('#current-score').text(currentScore)
+        $('#five-score').text(fiveScore)
+
+        // 新增500分數圖片
+        $('#zone').append(score2)
+
+        score2.animate({
+          top: "20%"
+        }, 600).fadeToggle()
+
+
+      }
+    })
+
+
+
+    //鳥移動效果
+    function moveBird(bird) {
+      const left = Math.round(Math.random() * 100) + '%'
+      const top = Math.round(Math.random() * 100) + '%'
+      bird.animate({ top: top, left: left }, 2000, function () {
+        moveBird(bird)
+      })
+    }
+
+    // 音效
+    function moneySound() {
+      var money = new Audio('./money.mp3')
+      money.play()
+      setTimeout(function () {
+        money.pause()
+        // 將音效的播放位置重置為0，以便下次播放时從頭開始播放
+        money.currentTime = 0
+      }, 2000)
+    }
+
+
+  </script>
+</body>
+
+</html>
